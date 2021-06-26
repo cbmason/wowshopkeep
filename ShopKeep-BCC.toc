@@ -1,0 +1,9 @@
+## Interface: 20501
+## Title: ShopKeep
+## Author: Zensmash (archerrez4@gmail.com)
+## Notes: Burning Crusade Classic version
+## SavedVariables: SHOP_DB
+## SavedVariablesPerCharacter: SHOP_DBPC
+## X-Version: 0.0.1
+Locales\enUS.lua
+ShopKeep.lua
