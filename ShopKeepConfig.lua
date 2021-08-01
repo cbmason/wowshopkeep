@@ -17,11 +17,11 @@ Options.name = addonName
 
 InterfaceOptions_AddCategory(Options)
 
-if not isClassic then
-    if Options then
-        Mixin(Options, BackdropTemplateMixin)
-    end
-end
+-- if not isClassic then
+--     if Options then
+--         Mixin(Options, BackdropTemplateMixin)
+--     end
+-- end
 
 local function myprint(msg)
     print(_G.SHOP_DB.Color1..addonName..": ".._G.SHOP_DB.Color1..msg)
@@ -45,6 +45,40 @@ Options:SetScript("OnShow", function(self)
         return check
     end
 
+    local function makeEditBox(fname, height, width)
+        -- local editbox = CreateFrame("EditBox", fname, self, "DialogBoxFrame")
+        local editbox = CreateFrame("EditBox", fname, self, _G.BackdropTemplateMixin and "BackdropTemplate" or nil)
+        --editbox:SetWidth(width)
+        --editbox:SetHeight(height)
+        editbox:SetSize(width, height)
+        editbox:ClearFocus(self)
+        editbox:SetAutoFocus(false)
+        editbox:EnableMouse(true)
+        editbox:SetTextInsets(10,0,0,0)
+        -- editbox:SetBackdrop({bgFile = "Interface/Tooltips/UI-Tooltip-Background",
+  		-- edgeFile = "Interface/Tooltips/UI-Tooltip-Border",
+		-- 	tile = true, tileSize = 16, edgeSize = 16,
+		-- 	insets = { left = 4, right = 4, top = 4, bottom = 4 }})
+        -- editbox:SetBackdropColor(0.1,0.1,0.1,0.5)
+        -- editbox:SetBackdropBorderColor(0.6, 0.6, 0.6, 1)
+        editbox:SetFontObject(ChatFontNormal)
+        editbox:SetText("")
+        editbox:SetBackdrop({
+            bgFile = "Interface\\DialogFrame\\UI-DialogBox-Background",
+            edgeFile = "Interface\\DialogFrame\\UI-DialogBox-Border",
+            --tile = true,
+            --tileSize = 32,
+            edgeSize = 16,
+            insets = { left = 4, right = 3, top = 4, bottom = 3 }
+            })
+        -- editbox:SetMultiLine(true)
+        -- editbox:SetAllPoints()
+        editbox:SetScript("OnEscapePressed", editbox.ClearFocus)
+        editbox:SetScript("OnTabPressed", editbox.ClearFocus)
+        return editbox
+        --editbox:SetFontObject(GameFontNormalLarge)
+    end
+
     -- Config Title
     local TitleOptions = self:CreateFontString("$parentTitleOptions", "ARTWORK", "GameFontNormalLarge")
     TitleOptions:SetPoint("TOPLEFT", 16, -16)
@@ -66,20 +100,27 @@ Options:SetScript("OnShow", function(self)
             if _G.SHOP_DBPC["enabled"] then
                 -- ShopKeep_Enable()
                 ChatFrame_AddMessageEventFilter("CHAT_MSG_WHISPER", addonData.methods.onWhisper)
+                shopkeep_onSayCheckbox:Enable()
+                shopkeep_onGchatCheckbox:Enable()
+                shopkeep_onPartyCheckbox:Enable()
+                shopkeep_onRaidCheckbox:Enable()
+                shopkeep_DebugmodeCheckbox:Enable()
                 -- ChatFrame_AddMessageEventFilter("CHAT_MSG_WHISPER_INFORM", onResponse)
 
             else
                 -- ShopKeep_Disable()
                 ChatFrame_RemoveMessageEventFilter("CHAT_MSG_WHISPER", addonData.methods.onWhisper)
+                shopkeep_onSayCheckbox:Disable()
+                shopkeep_onGchatCheckbox:Disable()
+                shopkeep_onPartyCheckbox:Disable()
+                shopkeep_onRaidCheckbox:Disable()
+                shopkeep_DebugmodeCheckbox:Disable()
                 -- ChatFrame_RemoveMessageEventFilter("CHAT_MSG_WHISPER_INFORM", onResponse)
             end
         end
     )
-    local offset = -20
-    shopkeep_EnabledCheckbox:SetChecked(_G.SHOP_DBPC["enabled"]);
-    shopkeep_EnabledCheckbox:SetPoint("TOPLEFT", TitleOptions, "BOTTOMLEFT", 0, offset);
 
--- onSay
+    -- onSay
     shopkeep_onSayCheckbox = makeCheckbox(
         L["Checkbox_onSay"] ,
         L["Checkbox_onSay_Desc"] ,
@@ -93,13 +134,9 @@ Options:SetScript("OnShow", function(self)
             -- end
         end
     )
-    local enables_x_offset = 20
-    offset = offset -25
-    shopkeep_onSayCheckbox:SetChecked(_G.SHOP_DBPC["onSay"]);
-    shopkeep_onSayCheckbox:SetPoint("TOPLEFT", TitleOptions, "BOTTOMLEFT", enables_x_offset, offset);
 
--- onGchat
-    shopkee_onGchatCheckbox = makeCheckbox(
+    -- onGchat
+    shopkeep_onGchatCheckbox = makeCheckbox(
         L["Checkbox_onGchat"] ,
         L["Checkbox_onGchat_Desc"] ,
         function(self, value)
@@ -111,11 +148,8 @@ Options:SetScript("OnShow", function(self)
             -- end
         end
     )
-    offset = offset -25
-    shopkee_onGchatCheckbox:SetChecked(_G.SHOP_DBPC["onGchat"]);
-    shopkee_onGchatCheckbox:SetPoint("TOPLEFT", TitleOptions, "BOTTOMLEFT", enables_x_offset, offset);
 
--- onParty
+    -- onParty
     shopkeep_onPartyCheckbox = makeCheckbox(
         L["Checkbox_onParty"] ,
         L["Checkbox_onParty_Desc"] ,
@@ -128,11 +162,8 @@ Options:SetScript("OnShow", function(self)
             -- end
         end
     )
-    offset = offset -25
-    shopkeep_onPartyCheckbox:SetChecked(_G.SHOP_DBPC["onParty"]);
-    shopkeep_onPartyCheckbox:SetPoint("TOPLEFT", TitleOptions, "BOTTOMLEFT", enables_x_offset, offset);
 
--- onRaid
+    -- onRaid
     shopkeep_onRaidCheckbox = makeCheckbox(
         L["Checkbox_onRaid"] ,
         L["Checkbox_onRaid_Desc"] ,
@@ -145,10 +176,44 @@ Options:SetScript("OnShow", function(self)
             -- end
         end
     )
+
+    --debugBox = CreateFrame("CheckButton", "ShopKeep_Checkbox_"..label, self, "InterfaceOptionsCheckButtonTemplate")
+
+    debugBox = makeEditBox("debugBox", 50, 400)
+
+    -- Set up layout
+    local offset = -20
+    shopkeep_EnabledCheckbox:SetChecked(_G.SHOP_DBPC["enabled"]);
+    shopkeep_EnabledCheckbox:SetPoint("TOPLEFT", TitleOptions, "BOTTOMLEFT", 0, offset);
+
+    local enables_x_offset = 20
+    offset = offset -25
+    shopkeep_onSayCheckbox:SetChecked(_G.SHOP_DBPC["onSay"]);
+    shopkeep_onSayCheckbox:SetPoint("TOPLEFT", TitleOptions, "BOTTOMLEFT", enables_x_offset, offset);
+
+    offset = offset -25
+    shopkeep_onGchatCheckbox:SetChecked(_G.SHOP_DBPC["onGchat"]);
+    shopkeep_onGchatCheckbox:SetPoint("TOPLEFT", TitleOptions, "BOTTOMLEFT", enables_x_offset, offset);
+
+    offset = offset -25
+    shopkeep_onPartyCheckbox:SetChecked(_G.SHOP_DBPC["onParty"]);
+    shopkeep_onPartyCheckbox:SetPoint("TOPLEFT", TitleOptions, "BOTTOMLEFT", enables_x_offset, offset);
+
     offset = offset -25
     shopkeep_onRaidCheckbox:SetChecked(_G.SHOP_DBPC["onRaid"]);
     shopkeep_onRaidCheckbox:SetPoint("TOPLEFT", TitleOptions, "BOTTOMLEFT", enables_x_offset, offset);
 
+    if _G.SHOP_DBPC["enabled"] then
+        shopkeep_onSayCheckbox:Enable()
+        shopkeep_onGchatCheckbox:Enable()
+        shopkeep_onPartyCheckbox:Enable()
+        shopkeep_onRaidCheckbox:Enable()
+    else
+        shopkeep_onSayCheckbox:Disable()
+        shopkeep_onGchatCheckbox:Disable()
+        shopkeep_onPartyCheckbox:Disable()
+        shopkeep_onRaidCheckbox:Disable()
+    end
 
     -- Debug Mode
     shopkeep_DebugmodeCheckbox = makeCheckbox(
@@ -164,40 +229,13 @@ Options:SetScript("OnShow", function(self)
         end
     )
     offset = offset -45
+    if _G.SHOP_DBPC["enabled"] then shopkeep_DebugmodeCheckbox:Enable(); end
     shopkeep_DebugmodeCheckbox:SetChecked(_G.SHOP_DBPC["debugmode"]);
     shopkeep_DebugmodeCheckbox:SetPoint("TOPLEFT", TitleOptions, "BOTTOMLEFT", 0, offset);
 
+    offset = offset -45
+    debugBox:SetPoint("TOPLEFT", TitleOptions, "BOTTOMLEFT", 0, offset);
 
   self:SetScript("OnShow", nil);
 end
 )
-
--- -- RegisterEvents
--- local ShopKeep_Eventframe = CreateFrame("FRAME")
--- ShopKeep_Eventframe:RegisterEvent("ADDON_LOADED")
--- ShopKeep_Eventframe:RegisterEvent("PLAYER_LOGIN")
-
--- local function ShopKeep_OnEvent(self, event, arg1, arg2, ...)
---     if event == "ADDON_LOADED" and arg1 == addonName then
---         --myprint(L["Addon_Loaded"])
---         ShopKeepConfig_Loaded = true
---         ShopKeep_Eventframe:UnregisterEvent("ADDON_LOADED")
---     end
---     if event == "PLAYER_LOGIN" and ShopKeepConfig_Loaded then
---         --myprint(L["Player_Loaded"])
---         _G.SHOP_DB.Color1 = color1
---         _G.SHOP_DB.Color2 = color2
---         _G.SHOP_DB["Version"] = GetAddOnMetadata(addonName, "X-Version")
-
---         -- Initialize if new variable added
-
---         -- if _G.SHOP_DBPC["AllInvite"] == nil then
---         --     _G.SHOP_DBPC.AllInvite = false
---         -- end
---         ShopKeep_Eventframe:UnregisterEvent("PLAYER_LOGIN")
---     end
--- end
-
--- THIS IS THE MAIN ENTRY POINT main()
-
--- ShopKeep_Eventframe:SetScript("OnEvent", ShopKeep_OnEvent)
