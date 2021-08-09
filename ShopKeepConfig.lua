@@ -46,37 +46,56 @@ Options:SetScript("OnShow", function(self)
     end
 
     local function makeEditBox(fname, height, width)
-        -- local editbox = CreateFrame("EditBox", fname, self, "DialogBoxFrame")
         local editbox = CreateFrame("EditBox", fname, self, _G.BackdropTemplateMixin and "BackdropTemplate" or nil)
-        --editbox:SetWidth(width)
-        --editbox:SetHeight(height)
         editbox:SetSize(width, height)
         editbox:ClearFocus(self)
         editbox:SetAutoFocus(false)
         editbox:EnableMouse(true)
         editbox:SetTextInsets(10,0,0,0)
-        -- editbox:SetBackdrop({bgFile = "Interface/Tooltips/UI-Tooltip-Background",
-  		-- edgeFile = "Interface/Tooltips/UI-Tooltip-Border",
-		-- 	tile = true, tileSize = 16, edgeSize = 16,
-		-- 	insets = { left = 4, right = 4, top = 4, bottom = 4 }})
-        -- editbox:SetBackdropColor(0.1,0.1,0.1,0.5)
-        -- editbox:SetBackdropBorderColor(0.6, 0.6, 0.6, 1)
         editbox:SetFontObject(ChatFontNormal)
         editbox:SetText("")
         editbox:SetBackdrop({
             bgFile = "Interface\\DialogFrame\\UI-DialogBox-Background",
             edgeFile = "Interface\\DialogFrame\\UI-DialogBox-Border",
-            --tile = true,
-            --tileSize = 32,
             edgeSize = 16,
             insets = { left = 4, right = 3, top = 4, bottom = 3 }
             })
-        -- editbox:SetMultiLine(true)
-        -- editbox:SetAllPoints()
         editbox:SetScript("OnEscapePressed", editbox.ClearFocus)
         editbox:SetScript("OnTabPressed", editbox.ClearFocus)
         return editbox
-        --editbox:SetFontObject(GameFontNormalLarge)
+    end
+
+    local function makeButton(fname, height, width)
+        local testbutton = CreateFrame("Button", fname, self, "OptionsButtonTemplate")
+        testbutton:SetSize(width, height)
+        return testbutton
+    end
+
+    local function enableUI()
+        shopkeep_onSayCheckbox:Enable()
+        shopkeep_onSayCheckbox.label:SetTextColor(1, 1, 1)
+        shopkeep_onGchatCheckbox:Enable()
+        shopkeep_onGchatCheckbox.label:SetTextColor(1, 1, 1)
+        shopkeep_onPartyCheckbox:Enable()
+        shopkeep_onPartyCheckbox.label:SetTextColor(1, 1, 1)
+        shopkeep_onRaidCheckbox:Enable()
+        shopkeep_onRaidCheckbox.label:SetTextColor(1, 1, 1)
+        shopkeep_DebugmodeCheckbox:Enable()
+        shopkeep_DebugmodeCheckbox.label:SetTextColor(1, 1, 1)
+    end
+
+    local function disableUI()
+        shopkeep_onSayCheckbox:Disable()
+        shopkeep_onSayCheckbox.label:SetTextColor(0.5, 0.5, 0.5)
+        shopkeep_onGchatCheckbox:Disable()
+        shopkeep_onGchatCheckbox.label:SetTextColor(0.5, 0.5, 0.5)
+        shopkeep_onPartyCheckbox:Disable()
+        shopkeep_onPartyCheckbox.label:SetTextColor(0.5, 0.5, 0.5)
+        shopkeep_onRaidCheckbox:Disable()
+        shopkeep_onRaidCheckbox.label:SetTextColor(0.5, 0.5, 0.5)
+        shopkeep_DebugmodeCheckbox:Disable()
+        shopkeep_DebugmodeCheckbox.label:SetTextColor(0.5, 0.5, 0.5)
+
     end
 
     -- Config Title
@@ -100,21 +119,13 @@ Options:SetScript("OnShow", function(self)
             if _G.SHOP_DBPC["enabled"] then
                 -- ShopKeep_Enable()
                 ChatFrame_AddMessageEventFilter("CHAT_MSG_WHISPER", addonData.methods.onWhisper)
-                shopkeep_onSayCheckbox:Enable()
-                shopkeep_onGchatCheckbox:Enable()
-                shopkeep_onPartyCheckbox:Enable()
-                shopkeep_onRaidCheckbox:Enable()
-                shopkeep_DebugmodeCheckbox:Enable()
+                enableUI()
                 -- ChatFrame_AddMessageEventFilter("CHAT_MSG_WHISPER_INFORM", onResponse)
 
             else
                 -- ShopKeep_Disable()
                 ChatFrame_RemoveMessageEventFilter("CHAT_MSG_WHISPER", addonData.methods.onWhisper)
-                shopkeep_onSayCheckbox:Disable()
-                shopkeep_onGchatCheckbox:Disable()
-                shopkeep_onPartyCheckbox:Disable()
-                shopkeep_onRaidCheckbox:Disable()
-                shopkeep_DebugmodeCheckbox:Disable()
+                disableUI()
                 -- ChatFrame_RemoveMessageEventFilter("CHAT_MSG_WHISPER_INFORM", onResponse)
             end
         end
@@ -177,9 +188,43 @@ Options:SetScript("OnShow", function(self)
         end
     )
 
+    -- Debug Mode
+    shopkeep_DebugmodeCheckbox = makeCheckbox(
+        L["Checkbox_Debugmode"],
+        L["Checkbox_Debugmode_Desc"],
+        function(self, value)
+            _G.SHOP_DBPC["debugmode"] = value
+            if _G.SHOP_DBPC["debugmode"] then
+                -- enable the debug box
+            else
+                -- disable the debug box
+            end
+        end
+    )
+
     --debugBox = CreateFrame("CheckButton", "ShopKeep_Checkbox_"..label, self, "InterfaceOptionsCheckButtonTemplate")
 
     debugBox = makeEditBox("debugBox", 50, 400)
+
+    debugButton = makeButton("debugButton", 25, 100)
+    debugButton:SetText("Test!")
+    printAllButton = makeButton("printAllButton", 25, 100)
+    printAllButton:SetText("Dump Data!")
+    --debugButton.func
+
+    local function debugButton_OnClick()
+        -- print(string.format("debug: called handler %i, %i", _G.SHOP_DBPC["debugmode"], _G.SHOP_DBPC["enabled"]))
+        if _G.SHOP_DBPC["debugmode"] and _G.SHOP_DBPC["enabled"] then
+            addonData.methods.doResponse(debugBox:GetText(), nil, true)
+        end
+    end
+
+    local function printAllButton_OnClick()
+        PrintAllShopData()
+    end
+
+    debugButton:SetScript("OnClick", debugButton_OnClick )
+    printAllButton:SetScript("OnClick", printAllButton_OnClick )
 
     -- Set up layout
     local offset = -20
@@ -203,38 +248,23 @@ Options:SetScript("OnShow", function(self)
     shopkeep_onRaidCheckbox:SetChecked(_G.SHOP_DBPC["onRaid"]);
     shopkeep_onRaidCheckbox:SetPoint("TOPLEFT", TitleOptions, "BOTTOMLEFT", enables_x_offset, offset);
 
-    if _G.SHOP_DBPC["enabled"] then
-        shopkeep_onSayCheckbox:Enable()
-        shopkeep_onGchatCheckbox:Enable()
-        shopkeep_onPartyCheckbox:Enable()
-        shopkeep_onRaidCheckbox:Enable()
-    else
-        shopkeep_onSayCheckbox:Disable()
-        shopkeep_onGchatCheckbox:Disable()
-        shopkeep_onPartyCheckbox:Disable()
-        shopkeep_onRaidCheckbox:Disable()
-    end
-
-    -- Debug Mode
-    shopkeep_DebugmodeCheckbox = makeCheckbox(
-        L["Checkbox_Debugmode"],
-        L["Checkbox_Debugmode_Desc"],
-        function(self, value)
-            _G.SHOP_DBPC["debugmode"] = value
-            if _G.SHOP_DBPC["debugmode"] then
-                -- enable the debug box
-            else
-                -- disable the debug box
-            end
-        end
-    )
     offset = offset -45
     if _G.SHOP_DBPC["enabled"] then shopkeep_DebugmodeCheckbox:Enable(); end
     shopkeep_DebugmodeCheckbox:SetChecked(_G.SHOP_DBPC["debugmode"]);
     shopkeep_DebugmodeCheckbox:SetPoint("TOPLEFT", TitleOptions, "BOTTOMLEFT", 0, offset);
 
+    -- Debug button / box
     offset = offset -45
     debugBox:SetPoint("TOPLEFT", TitleOptions, "BOTTOMLEFT", 0, offset);
+    debugButton:SetPoint("TOPLEFT", TitleOptions, "BOTTOMLEFT", 410, offset);
+    offset = offset -25
+    printAllButton:SetPoint("TOPLEFT", TitleOptions, "BOTTOMLEFT", 410, offset);
+
+    if _G.SHOP_DBPC["enabled"] then
+        enableUI()
+    else
+        disableUI()
+    end
 
   self:SetScript("OnShow", nil);
 end

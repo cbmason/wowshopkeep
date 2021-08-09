@@ -7,8 +7,11 @@ local shopData = {}
 function BuildShopTable()
     -- Get character's profession data
     local name, type
-    for i=i, GetNumTradeSkills() do
+    print("building shop table")
+    -- numSkills = GetNumTradeSkills()
+    for i=1, GetNumTradeSkills() do
         name, type, _, _, _, _ = GetTradeSkillInfo(i);
+        print("found ", name, type)
         if (name and type ~= "header") then
             shopData[i] = name
         end
@@ -20,7 +23,7 @@ function GetMatchingItems(...)
     local entry_matches
     for entry in pairs(shopData) do
         entry_matches = false
-        for i,v in ipairs(arg) do
+        for i,v in ipairs(entry) do
             if string.find(entry, v) then
                 -- need at least one match to add to the return
                 entry_matches = true
@@ -32,5 +35,12 @@ function GetMatchingItems(...)
         if entry_matches then retval.insert(entry) end
     end
     return retval
+end
+
+function PrintAllShopData()
+    print("Dumping shop data...")
+    for index, value in pairs(shopData) do
+        print(index, ", ", value)
+    end
 end
 
