@@ -11,28 +11,31 @@ function BuildShopTable()
     -- numSkills = GetNumTradeSkills()
     for i=1, GetNumTradeSkills() do
         name, type, _, _, _, _ = GetTradeSkillInfo(i);
-        print("found ", name, type)
         if (name and type ~= "header") then
-            shopData[i] = name
+            if shopData[i] == nil then
+                print("added ", name)
+                shopData[i] = name
+            end
         end
     end
 end
 
-function GetMatchingItems(...)
+-- function GetMatchingItems(...)
+function GetMatchingItems(argtable)
     local retval = {}
     local entry_matches
-    for entry in pairs(shopData) do
+    for i, entry in pairs(shopData) do
         entry_matches = false
-        for i,v in ipairs(entry) do
-            if string.find(entry, v) then
-                -- need at least one match to add to the return
+        -- Check each argument, if any do not match, don't add it.
+        for j,v in ipairs(argtable) do
+            if string.find(entry:lower(), v:lower()) then
                 entry_matches = true
             else
                 entry_matches = false
-                break
+                break;
             end
         end
-        if entry_matches then retval.insert(entry) end
+        if entry_matches then table.insert(retval, entry) end
     end
     return retval
 end
