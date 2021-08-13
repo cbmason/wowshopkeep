@@ -48,7 +48,9 @@ local function OnLoad()
     if _G.SHOP_DBPC.onRaid == nil then _G.SHOP_DBPC.onRaid = false end
 
     -- Make profession tabl*
-    BuildShopTable()
+    --BuildShopTable()
+    -- addonData.methods.getTradeSkills()
+    -- addonData.methods.getCrafts()
 end
 
 
@@ -203,6 +205,7 @@ local ShopKeep_Eventframe = CreateFrame("FRAME")
 ShopKeep_Eventframe:RegisterEvent("ADDON_LOADED")
 ShopKeep_Eventframe:RegisterEvent("PLAYER_LOGIN")
 ShopKeep_Eventframe:RegisterEvent("TRADE_SKILL_UPDATE")
+ShopKeep_Eventframe:RegisterEvent("CRAFT_UPDATE")
 
 local function ShopKeep_OnEvent(self, event, arg1, arg2, ...)
     if event == "ADDON_LOADED" and arg1 == addonName then
@@ -224,8 +227,16 @@ local function ShopKeep_OnEvent(self, event, arg1, arg2, ...)
         -- end
         ShopKeep_Eventframe:UnregisterEvent("PLAYER_LOGIN")
     end
+     --if event == "TRADE_SKILL_UPDATE" or event == "CRAFT_UPDATE" then
+    --if event == "TRADE_SKILL_SHOW" then
+    if event == "CRAFT_UPDATE" then
+        --BuildShopTable()
+        --addonData.methods.getCrafts()
+        ShopKeepGetCrafts()
+    end
     if event == "TRADE_SKILL_UPDATE" then
-        BuildShopTable()
+        --addonData.methods.getTradeSkills()
+        ShopKeepGetTradeSkills()
     end
 end
 

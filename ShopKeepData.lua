@@ -2,23 +2,72 @@
 -- All Rights Reserved.
 -- This code is not to be modified or distributed without written permission by the author.
 
+local addonData = ...
+
 local shopData = {}
 
-function BuildShopTable()
-    -- Get character's profession data
+function ShopKeepGetCrafts()
     local name, type
-    print("building shop table")
+    print("getting crafts")
     -- numSkills = GetNumTradeSkills()
-    for i=1, GetNumTradeSkills() do
-        name, type, _, _, _, _ = GetTradeSkillInfo(i);
+    -- for i=1, GetNumTradeSkills() do
+    for i=1, GetNumCrafts() do
+        name, type, _, _, _, _ = GetCraftInfo(i);
         if (name and type ~= "header") then
-            if shopData[i] == nil then
-                print("added ", name)
-                shopData[i] = name
+            if shopData[name] == nil then
+                itemRecipe = GetCraftItemLink(i);
+                print("added ", itemRecipe)
+                shopData[name] = itemRecipe
             end
         end
     end
 end
+
+function ShopKeepGetTradeSkills()
+    local name, type
+    print("getting tradeskills")
+    -- numSkills = GetNumTradeSkills()
+    -- for i=1, GetNumTradeSkills() do
+    for i=1, GetNumTradeSkills() do
+        name, type, _, _, _, _ = GetTradeSkillInfo(i);
+        if (name and type ~= "header") then
+            if shopData[name] == nil then
+                itemRecipe = GetTradeSkillRecipeLink(i);
+                print("Added ", itemRecipe)
+                shopData[name] = itemRecipe
+            end
+        end
+    end
+end
+
+--function BuildShopTable()
+    -- Get character's profession data
+    -- local name, type
+    -- print("building shop table")
+    -- numSkills = GetNumTradeSkills()
+    -- for i=1, GetNumTradeSkills() do
+    -- for i=1, GetNumCrafts() do
+    --     name, type, _, _, _, _ = GetCraftInfo(i);
+    --     if (name and type ~= "header") then
+    --         if shopData[name] == nil then
+    --             itemRecipe = GetCraftItemLink(i);
+    --             print("added ", itemRecipe)
+    --             shopData[name] = itemRecipe
+    --         end
+    --     end
+    -- end
+    -- for i=1, GetNumTradeSkills() do
+    --     name, type, _, _, _, _ = GetTradeSkillInfo(i);
+    --     if (name and type ~= "header") then
+    --         if shopData[name] == nil then
+    --             itemRecipe = GetTradeSkillRecipeLink(i);
+    --             print("Added ", itemRecipe)
+    --             shopData[name] = itemRecipe
+    --         end
+    --     end
+    -- end
+
+--end
 
 -- function GetMatchingItems(...)
 function GetMatchingItems(argtable)

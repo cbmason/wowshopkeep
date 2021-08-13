@@ -101,7 +101,7 @@ Options:SetScript("OnShow", function(self)
     -- Config Title
     local TitleOptions = self:CreateFontString("$parentTitleOptions", "ARTWORK", "GameFontNormalLarge")
     TitleOptions:SetPoint("TOPLEFT", 16, -16)
-    TitleOptions:SetText(_G.AWI_DB.Color1..addonName)
+    TitleOptions:SetText(_G.SHOP_DB.Color1..addonName)
 
     -- version
     local VersionOptions = self:CreateFontString("$parentTitleOptions", "ARTWORK", "GameFontNormal");
