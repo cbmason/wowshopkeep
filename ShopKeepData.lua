@@ -4,7 +4,11 @@
 
 local addonData = ...
 
-local shopData = {}
+local _G = getfenv(0)
+
+-- local shopData = {}
+local shopData = _G.SHOP_DBPC.database
+
 
 function ShopKeepGetCrafts()
     local name, type
@@ -77,7 +81,9 @@ function GetMatchingItems(argtable)
         entry_matches = false
         -- Check each argument, if any do not match, don't add it.
         for j,v in ipairs(argtable) do
-            if string.find(entry:lower(), v:lower()) then
+            local realString = entry:match("%b[]")
+            -- if string.find(entry:lower(), v:lower()) then
+            if string.find(realString:lower(), v:lower()) then
                 entry_matches = true
             else
                 entry_matches = false
@@ -96,3 +102,20 @@ function PrintAllShopData()
     end
 end
 
+
+
+-- RegisterEvents
+local ShopKeepData_Eventframe = CreateFrame("FRAME")
+ShopKeepData_Eventframe:RegisterEvent("ADDON_LOADED")
+
+local function ShopKeepData_OnEvent(self, event, arg1, arg2, ...)
+    if event == "ADDON_LOADED" then
+        if _G.SHOP_DBPC.database == nil then
+            _G.SHOP_DBPC.database = {}
+        end
+        shopData = _G.SHOP_DBPC.database
+        ShopKeepData_Eventframe:UnregisterEvent("ADDON_LOADED")
+    end
+end
+
+ShopKeepData_Eventframe:SetScript("OnEvent", ShopKeepData_OnEvent)

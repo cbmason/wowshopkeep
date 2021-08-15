@@ -10,7 +10,6 @@ addonData.methods = {}
 local color1 = "|cff3399ff"
 local color2 = "|cff1eff00"
 
--- todo: debugmode -> testmode
 _G.SHOP_DB = {
     --debugmode = false,
     Color1 = "|cff3399ff",
@@ -20,7 +19,7 @@ _G.SHOP_DB = {
     max_items = 5,
 }
 
--- todo: implement everything other than whisper
+-- todo: can we remove this?
 _G.SHOP_DBPC = {
     enabled = true,
     onSay = false,
@@ -46,6 +45,22 @@ local function OnLoad()
     if _G.SHOP_DBPC.onGchat == nil then _G.SHOP_DBPC.onGchat = false end
     if _G.SHOP_DBPC.onParty == nil then _G.SHOP_DBPC.onParty = false end
     if _G.SHOP_DBPC.onRaid == nil then _G.SHOP_DBPC.onRaid = false end
+
+    if _G.SHOP_DBPC.enabled == true then
+        ChatFrame_AddMessageEventFilter("CHAT_MSG_WHISPER", onWhisper)
+        if _G.SHOP_DBPC.onSay then
+            ChatFrame_AddMessageEventFilter("CHAT_MSG_SAY", onWhisper)
+        end
+        if _G.SHOP_DBPC.onGchat then
+            ChatFrame_AddMessageEventFilter("CHAT_MSG_GUILD", onWhisper)
+        end
+        if _G.SHOP_DBPC.onParty then
+            ChatFrame_AddMessageEventFilter("CHAT_MSG_PARTY", onWhisper)
+        end
+        if _G.SHOP_DBPC.Checkbox_onRaid then
+            ChatFrame_AddMessageEventFilter("CHAT_MSG_RAID", onWhisper)
+        end
+    end
 
     -- Make profession tabl*
     --BuildShopTable()
@@ -165,14 +180,14 @@ end
 addonData.methods.doResponse = doResponse
 addonData.methods.onWhisper = onWhisper
 
--- local function ShopKeep_Enable()
---     ChatFrame_AddMessageEventFilter("CHAT_MSG_WHISPER", onWhisper)
--- end
+local function ShopKeep_Enable()
+    ChatFrame_AddMessageEventFilter("CHAT_MSG_WHISPER", onWhisper)
+end
 
 
--- local function ShopKeep_Disable()
---     ChatFrame_RemoveMessageEventFilter("CHAT_MSG_WHISPER", onWhisper)
--- end
+local function ShopKeep_Disable()
+    ChatFrame_RemoveMessageEventFilter("CHAT_MSG_WHISPER", onWhisper)
+end
 
 
 
@@ -202,17 +217,17 @@ end
 
 -- RegisterEvents
 local ShopKeep_Eventframe = CreateFrame("FRAME")
-ShopKeep_Eventframe:RegisterEvent("ADDON_LOADED")
+ShopKeep_Eventframe:RegisterEvent("PLAYER_LOGIN")
 ShopKeep_Eventframe:RegisterEvent("PLAYER_LOGIN")
 ShopKeep_Eventframe:RegisterEvent("TRADE_SKILL_UPDATE")
 ShopKeep_Eventframe:RegisterEvent("CRAFT_UPDATE")
 
 local function ShopKeep_OnEvent(self, event, arg1, arg2, ...)
-    if event == "ADDON_LOADED" and arg1 == addonName then
+    if event == "PLAYER_LOGIN" and arg1 == addonName then
         myprint(L["Addon_Loaded"])
         -- ShopKeepConfig_Loaded = true
         OnLoad()
-        ShopKeep_Eventframe:UnregisterEvent("ADDON_LOADED")
+        ShopKeep_Eventframe:UnregisterEvent("PLAYER_LOGIN")
     end
     if event == "PLAYER_LOGIN" and ShopKeepConfig_Loaded then
         myprint(L["Player_Loaded"])

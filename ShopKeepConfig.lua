@@ -1,12 +1,11 @@
+--TODO: add option for max messages
+--TODO:
 
 -- Copyright © 2021 Zensmash  <archerrez4@gmail.com>
 -- All Rights Reserved.
 -- This code is not to be modified or distributed without written permission by the author.
 
 -- Options dialog
-
--- TODO: commit, then redo this using AceConfig, add the test run
-
 
 local _G = getfenv(0)
 local addonName, addonData = ...
@@ -120,12 +119,34 @@ Options:SetScript("OnShow", function(self)
                 -- ShopKeep_Enable()
                 ChatFrame_AddMessageEventFilter("CHAT_MSG_WHISPER", addonData.methods.onWhisper)
                 enableUI()
-                -- ChatFrame_AddMessageEventFilter("CHAT_MSG_WHISPER_INFORM", onResponse)
-
+                if _G.SHOP_DBPC["onSay"] then
+                    ChatFrame_AddMessageEventFilter("CHAT_MSG_SAY", addonData.methods.onWhisper)
+                end
+                if _G.SHOP_DBPC["onGchat"] then
+                    ChatFrame_AddMessageEventFilter("CHAT_MSG_GUILD", addonData.methods.onWhisper)
+                end
+                if _G.SHOP_DBPC["onParty"] then
+                    ChatFrame_AddMessageEventFilter("CHAT_MSG_PARTY", addonData.methods.onWhisper)
+                end
+                if _G.SHOP_DBPC["Checkbox_onRaid"] then
+                    ChatFrame_AddMessageEventFilter("CHAT_MSG_RAID", addonData.methods.onWhisper)
+                end
             else
                 -- ShopKeep_Disable()
                 ChatFrame_RemoveMessageEventFilter("CHAT_MSG_WHISPER", addonData.methods.onWhisper)
                 disableUI()
+                if _G.SHOP_DBPC["onSay"] then
+                    ChatFrame_RemoveMessageEventFilter("CHAT_MSG_SAY", addonData.methods.onWhisper)
+                end
+                if _G.SHOP_DBPC["onGchat"] then
+                    ChatFrame_RemoveMessageEventFilter("CHAT_MSG_GUILD", addonData.methods.onWhisper)
+                end
+                if _G.SHOP_DBPC["onParty"] then
+                    ChatFrame_RemoveMessageEventFilter("CHAT_MSG_PARTY", addonData.methods.onWhisper)
+                end
+                if _G.SHOP_DBPC["Checkbox_onRaid"] then
+                    ChatFrame_RemoveMessageEventFilter("CHAT_MSG_RAID", addonData.methods.onWhisper)
+                end
                 -- ChatFrame_RemoveMessageEventFilter("CHAT_MSG_WHISPER_INFORM", onResponse)
             end
         end
@@ -138,11 +159,11 @@ Options:SetScript("OnShow", function(self)
         function(self, value)
             -- master_enable = _G.SHOP_DBPC["onSay"]
             _G.SHOP_DBPC["onSay"] = value
-            -- if _G.SHOP_DBPC["onSay"] and master_enable then
-            --     ChatFrame_AddMessageEventFilter("CHAT_MSG_SAY", onWhisper)
-            -- else
-            --     ChatFrame_RemoveMessageEventFilter("CHAT_MSG_SAY", onWhisper)
-            -- end
+            if _G.SHOP_DBPC["onSay"] and _G.SHOP_DBPC["enabled"] then
+                ChatFrame_AddMessageEventFilter("CHAT_MSG_SAY", addonData.methods.onWhisper)
+            else
+                ChatFrame_RemoveMessageEventFilter("CHAT_MSG_SAY", addonData.methods.onWhisper)
+            end
         end
     )
 
@@ -152,11 +173,11 @@ Options:SetScript("OnShow", function(self)
         L["Checkbox_onGchat_Desc"] ,
         function(self, value)
             _G.SHOP_DBPC["onGchat"] = value
-            -- if _G.SHOP_DBPC["onGchat"] then
-            --     ChatFrame_AddMessageEventFilter("CHAT_MSG_GUILD", onWhisper)
-            -- else
-            --     ChatFrame_RemoveMessageEventFilter("CHAT_MSG_GUILD", onWhisper)
-            -- end
+            if _G.SHOP_DBPC["onGchat"] and _G.SHOP_DBPC["enabled"] then
+                ChatFrame_AddMessageEventFilter("CHAT_MSG_GUILD", addonData.methods.onWhisper)
+            else
+                ChatFrame_RemoveMessageEventFilter("CHAT_MSG_GUILD", addonData.methods.onWhisper)
+            end
         end
     )
 
@@ -166,11 +187,11 @@ Options:SetScript("OnShow", function(self)
         L["Checkbox_onParty_Desc"] ,
         function(self, value)
             _G.SHOP_DBPC["onParty"] = value
-            -- if _G.SHOP_DBPC["onParty"] then
-            --     ChatFrame_AddMessageEventFilter("CHAT_MSG_PARTY", onWhisper)
-            -- else
-            --     ChatFrame_RemoveMessageEventFilter("CHAT_MSG_PARTY", onWhisper)
-            -- end
+            if _G.SHOP_DBPC["onParty"] and _G.SHOP_DBPC["enabled"] then
+                ChatFrame_AddMessageEventFilter("CHAT_MSG_PARTY", addonData.methods.onWhisper)
+            else
+                ChatFrame_RemoveMessageEventFilter("CHAT_MSG_PARTY", addonData.methods.onWhisper)
+            end
         end
     )
 
@@ -180,11 +201,11 @@ Options:SetScript("OnShow", function(self)
         L["Checkbox_onRaid_Desc"] ,
         function(self, value)
             _G.SHOP_DBPC["onRaid"] = value
-            -- if _G.SHOP_DBPC["onRaid"] then
-            --     ChatFrame_AddMessageEventFilter("CHAT MSG RAID", onWhisper)
-            -- else
-            --     ChatFrame_RemoveMessageEventFilter("CHAT MSG RAID", onWhisper)
-            -- end
+            if _G.SHOP_DBPC["onRaid"] and _G.SHOP_DBPC["enabled"] then
+                ChatFrame_AddMessageEventFilter("CHAT_MSG_RAID", addonData.methods.onWhisper)
+            else
+                ChatFrame_RemoveMessageEventFilter("CHAT_MSG_RAID", addonData.methods.onWhisper)
+            end
         end
     )
 
