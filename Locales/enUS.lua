@@ -26,6 +26,7 @@ L["Textbox_Keywords"] = "Keywords"
 L["Textbox_Keywords_Desc"] = "Comma-separated list of keywords to trigger a ShopKeep response"
 L["Addon_Loaded"] = "AddOn loaded..."
 L["Player_Loaded"] = "HERP"
+L["Max Recipes"] = "Max Recipes"
 
 
 addonData.L = L

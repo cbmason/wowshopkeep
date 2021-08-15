@@ -16,7 +16,6 @@ _G.SHOP_DB = {
     Color2 = "|cff1eff00",
     Version = GetAddOnMetadata(addonName, "X-Version"),
     keywords = "!shop",
-    max_items = 5,
 }
 
 -- todo: can we remove this?
@@ -26,7 +25,8 @@ _G.SHOP_DBPC = {
     onGchat = false,
     onParty = false,
     onRaid = false,
-    debugmode = false
+    debugmode = false,
+    max_items = 5,
 }
 
 local isRetail = (_G.WOW_PROJECT_ID == _G.WOW_PROJECT_MAINLINE)
@@ -45,6 +45,8 @@ local function OnLoad()
     if _G.SHOP_DBPC.onGchat == nil then _G.SHOP_DBPC.onGchat = false end
     if _G.SHOP_DBPC.onParty == nil then _G.SHOP_DBPC.onParty = false end
     if _G.SHOP_DBPC.onRaid == nil then _G.SHOP_DBPC.onRaid = false end
+    if _G.SHOP_DBPC.debugmode == nil then _G.SHOP_DBPC.debugmode = false end
+    if _G.SHOP_DBPC.max_items == nil then _G.SHOP_DBPC.max_items = 5 end
 
     if _G.SHOP_DBPC.enabled == true then
         ChatFrame_AddMessageEventFilter("CHAT_MSG_WHISPER", onWhisper)
@@ -118,7 +120,7 @@ local function doResponse(msg, sender, debug)
             --send the matches
             send_response(L["MATCHES_FOUND"], sender, debug)
             for i, v in ipairs(matches) do
-                if i >= _G.SHOP_DB["max_items"] then
+                if i > _G.SHOP_DBPC["max_items"] then
                     not_finished = true
                     break
                 else
