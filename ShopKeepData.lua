@@ -10,13 +10,12 @@ local shopData = _G.SHOP_DBPC.database
 
 function ShopKeepGetCrafts()
     local name, type
-    print("getting crafts")
     for i=1, GetNumCrafts() do
         name, type, _, _, _, _ = GetCraftInfo(i);
         if (name and type ~= "header") then
             if shopData[name] == nil then
                 itemRecipe = GetCraftItemLink(i);
-                print("added ", itemRecipe)
+                -- print("added ", itemRecipe) debug only
                 shopData[name] = itemRecipe
             end
         end
@@ -25,13 +24,12 @@ end
 
 function ShopKeepGetTradeSkills()
     local name, type
-    print("getting tradeskills")
     for i=1, GetNumTradeSkills() do
         name, type, _, _, _, _ = GetTradeSkillInfo(i);
         if (name and type ~= "header") then
             if shopData[name] == nil then
                 itemRecipe = GetTradeSkillRecipeLink(i);
-                print("Added ", itemRecipe)
+                -- print("Added ", itemRecipe) debug only
                 shopData[name] = itemRecipe
             end
         end

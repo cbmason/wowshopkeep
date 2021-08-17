@@ -14,12 +14,6 @@ Options.name = addonName
 
 InterfaceOptions_AddCategory(Options)
 
-local function myprint(msg)
-    if _G.SHOP_DBPC.debugmode then
-        print(_G.SHOP_DB.Color1..addonName..": ".._G.SHOP_DB.Color1..msg)
-    end
-end
-
 Options:Hide();
 Options:SetScript("OnShow", function(self)
 
@@ -78,7 +72,6 @@ Options:SetScript("OnShow", function(self)
         local info = {}
 
         function testDropdown:dropDown_OnClick(arg1)
-            myprint(arg1)
             UIDropDownMenu_SetText(testDropdown, arg1)
             _G.SHOP_DBPC["max_items"] = arg1
             CloseDropDownMenus()

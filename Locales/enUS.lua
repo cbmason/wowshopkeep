@@ -22,7 +22,7 @@ L["Checkbox_Debugmode_Desc"] = "Enables the debug console, !REMOVE FOR RELEASE!"
 L["Textbox_Keywords"] = "Keywords"
 L["Textbox_Keywords_Desc"] = "Comma-separated list of keywords to trigger a ShopKeep response"
 L["Addon_Loaded"] = "AddOn loaded..."
-L["Player_Loaded"] = "HERP"
 L["Max Recipes"] = "Max Recipes"
+L["show_firsttime_help"] = "SHOPKEEP: This appears to be the first time you've played this character after having installed Shopkeep, please open each tradeskill window, it lets the addon scan your available recipes"
 
 addonData.L = L

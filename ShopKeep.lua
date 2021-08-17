@@ -7,12 +7,8 @@ local addonName, addonData = ...
 local L = addonData.L
 addonData.methods = {}
 
-local color1 = "|cff3399ff"
-local color2 = "|cff1eff00"
-
 _G.SHOP_DB = {
-    Color1 = "|cff3399ff",
-    Color2 = "|cff1eff00",
+    Color1 = "|cff7799ee",
     Version = GetAddOnMetadata(addonName, "X-Version"),
     keywords = "!shop",
 }
@@ -24,17 +20,12 @@ _G.SHOP_DBPC = {
     onParty = true,
     onRaid = true,
     debugmode = false,
+    show_firsttime_help = true,
     max_items = 5,
 }
 
-local isRetail = (_G.WOW_PROJECT_ID == _G.WOW_PROJECT_MAINLINE)
-local isClassic = (_G.WOW_PROJECT_ID == _G.WOW_PROJECT_CLASSIC)
-local isTBC = (_G.WOW_PROJECT_ID == _G.WOW_PROJECT_BURNING_CRUSADE_CLASSIC)
-
 local function myprint(msg)
-    if _G.SHOP_DBPC.debugmode then
-        print(_G.SHOP_DB.Color1..addonName..": ".._G.SHOP_DB.Color1..msg)
-    end
+    print(_G.SHOP_DB.Color1..addonName..": ".._G.SHOP_DB.Color1..msg)
 end
 
 local function OnLoad()
@@ -46,6 +37,7 @@ local function OnLoad()
     if _G.SHOP_DBPC.onRaid == nil then _G.SHOP_DBPC.onRaid = true end
     if _G.SHOP_DBPC.debugmode == nil then _G.SHOP_DBPC.debugmode = false end
     if _G.SHOP_DBPC.max_items == nil then _G.SHOP_DBPC.max_items = 5 end
+    if _G.SHOP_DBPC.show_firsttime_help == nil then _G.SHOP_DBPC.show_firsttime_help = true end
 
     -- Turn on responses based on initial settings
     if _G.SHOP_DBPC.enabled == true then
@@ -140,23 +132,21 @@ end
 -- RegisterEvents
 local ShopKeep_Eventframe = CreateFrame("FRAME")
 ShopKeep_Eventframe:RegisterEvent("PLAYER_LOGIN")
-ShopKeep_Eventframe:RegisterEvent("PLAYER_LOGIN")
+ShopKeep_Eventframe:RegisterEvent("ADDON_LOADED")
 ShopKeep_Eventframe:RegisterEvent("TRADE_SKILL_UPDATE")
 ShopKeep_Eventframe:RegisterEvent("CRAFT_UPDATE")
 
-local function ShopKeep_OnEvent(self, event, arg1, arg2, ...)
+local function ShopKeep_OnEvent(self, event, arg1, ...)
     if event == "PLAYER_LOGIN" and arg1 == addonName then
-        myprint(L["Addon_Loaded"])
         OnLoad()
         ShopKeep_Eventframe:UnregisterEvent("PLAYER_LOGIN")
     end
-    if event == "PLAYER_LOGIN" and ShopKeepConfig_Loaded then
-        myprint(L["Player_Loaded"])
-        _G.SHOP_DB.Color1 = color1
-        _G.SHOP_DB.Color2 = color2
-        _G.SHOP_DB["Version"] = GetAddOnMetadata(addonName, "X-Version")
-
-        ShopKeep_Eventframe:UnregisterEvent("PLAYER_LOGIN")
+    if event == "ADDON_LOADED" then
+        if _G.SHOP_DBPC.show_firsttime_help then
+            myprint(L["show_firsttime_help"])
+            _G.SHOP_DBPC.show_firsttime_help = false
+        end
+        ShopKeep_Eventframe:UnregisterEvent("ADDON_LOADED")
     end
     if event == "CRAFT_UPDATE" then
         ShopKeepGetCrafts()
