@@ -1,6 +1,3 @@
---TODO: add option for max messages
---TODO:
-
 -- Copyright © 2021 Zensmash  <archerrez4@gmail.com>
 -- All Rights Reserved.
 -- This code is not to be modified or distributed without written permission by the author.
@@ -17,26 +14,23 @@ Options.name = addonName
 
 InterfaceOptions_AddCategory(Options)
 
--- if not isClassic then
---     if Options then
---         Mixin(Options, BackdropTemplateMixin)
---     end
--- end
-
 local function myprint(msg)
-    print(_G.SHOP_DB.Color1..addonName..": ".._G.SHOP_DB.Color1..msg)
+    if _G.SHOP_DBPC.debugmode then
+        print(_G.SHOP_DB.Color1..addonName..": ".._G.SHOP_DB.Color1..msg)
+    end
 end
 
 Options:Hide();
 Options:SetScript("OnShow", function(self)
 
-    -- make element helper functions
+    ---------------------------------------------------------------------------
+    -- Helper Functions
+    ---------------------------------------------------------------------------
 
+    -- element factories
     local function makeCheckbox(label, description, onClick)
         local check = CreateFrame("CheckButton", "ShopKeep_Checkbox_"..label, self, "InterfaceOptionsCheckButtonTemplate")
         check:SetScript("OnClick", function(self)
-            -- 856 = igMainMenuOptionCheckBoxOn
-            -- 857 = igMainMenuOptionCheckBoxOff
             local click = self:GetChecked() and 856 or 857
             PlaySound(click) onClick(self, self:GetChecked() and true or false)
             end)
@@ -84,7 +78,7 @@ Options:SetScript("OnShow", function(self)
         local info = {}
 
         function testDropdown:dropDown_OnClick(arg1)
-            print(arg1)
+            myprint(arg1)
             UIDropDownMenu_SetText(testDropdown, arg1)
             _G.SHOP_DBPC["max_items"] = arg1
             CloseDropDownMenus()
@@ -107,7 +101,6 @@ Options:SetScript("OnShow", function(self)
     end
 
     -- other helper functions
-
     local function enableUI()
         shopkeep_onSayCheckbox:Enable()
         shopkeep_onSayCheckbox.label:SetTextColor(1, 1, 1)
@@ -134,6 +127,10 @@ Options:SetScript("OnShow", function(self)
         shopkeep_DebugmodeCheckbox.label:SetTextColor(0.5, 0.5, 0.5)
     end
 
+    ---------------------------------------------------------------------------
+    -- ITEM CREATION
+    ---------------------------------------------------------------------------
+
     -- Config Title
     local TitleOptions = self:CreateFontString("$parentTitleOptions", "ARTWORK", "GameFontNormalLarge")
     TitleOptions:SetPoint("TOPLEFT", 16, -16)
@@ -143,7 +140,6 @@ Options:SetScript("OnShow", function(self)
     local VersionOptions = self:CreateFontString("$parentTitleOptions", "ARTWORK", "GameFontNormal");
     VersionOptions:SetPoint("TOPRIGHT", -16, -17)
     VersionOptions:SetJustifyH("RIGHT")
-    -- VersionOptions:SetText(_G.SHOP_DB["Color2"]..L["Version"].._G.SHOP_DB.Version)
     VersionOptions:SetText(_G.SHOP_DB["Color2"].._G.SHOP_DB["Version"])
 
     -- Enabled
@@ -184,7 +180,6 @@ Options:SetScript("OnShow", function(self)
                 if _G.SHOP_DBPC["Checkbox_onRaid"] then
                     ChatFrame_RemoveMessageEventFilter("CHAT_MSG_RAID", addonData.methods.onWhisper)
                 end
-                -- ChatFrame_RemoveMessageEventFilter("CHAT_MSG_WHISPER_INFORM", onResponse)
             end
         end
     )
@@ -194,7 +189,6 @@ Options:SetScript("OnShow", function(self)
         L["Checkbox_onSay"] ,
         L["Checkbox_onSay_Desc"] ,
         function(self, value)
-            -- master_enable = _G.SHOP_DBPC["onSay"]
             _G.SHOP_DBPC["onSay"] = value
             if _G.SHOP_DBPC["onSay"] and _G.SHOP_DBPC["enabled"] then
                 ChatFrame_AddMessageEventFilter("CHAT_MSG_SAY", addonData.methods.onWhisper)
@@ -252,27 +246,19 @@ Options:SetScript("OnShow", function(self)
         L["Checkbox_Debugmode_Desc"],
         function(self, value)
             _G.SHOP_DBPC["debugmode"] = value
-            if _G.SHOP_DBPC["debugmode"] then
-                -- enable the debug box
-            else
-                -- disable the debug box
-            end
         end
     )
 
     maxItemsLabel = makeLabel(L["Max Recipes"])
     maxItemsDropdown = makeDropDown("maxItemsDropdown", 50)
-    -- maxItemsDropdown.label:SetText(L["Max Items"])
 
     debugBox = makeEditBox("debugBox", 50, 400)
     debugButton = makeButton("debugButton", 25, 100)
     debugButton:SetText("Test!")
     printAllButton = makeButton("printAllButton", 25, 100)
     printAllButton:SetText("Dump Data!")
-    --debugButton.func
 
     local function debugButton_OnClick()
-        -- print(string.format("debug: called handler %i, %i", _G.SHOP_DBPC["debugmode"], _G.SHOP_DBPC["enabled"]))
         if _G.SHOP_DBPC["debugmode"] and _G.SHOP_DBPC["enabled"] then
             addonData.methods.doResponse(debugBox:GetText(), nil, true)
         end
@@ -284,6 +270,10 @@ Options:SetScript("OnShow", function(self)
 
     debugButton:SetScript("OnClick", debugButton_OnClick )
     printAllButton:SetScript("OnClick", printAllButton_OnClick )
+
+    ---------------------------------------------------------------------------
+    -- LAYOUT
+    ---------------------------------------------------------------------------
 
     -- Set up main checkboxes
     local offset = -20

@@ -2,9 +2,6 @@ local addonName, addonData = ...
 
 local L = {}
 
--- L.CUSTOMER_HELP = "Whisper 'shop <slot> <type>'  - <slot> can be \"head,\" \"helm,\" \"pants,\" anything like that.  <type> is the desired stat i.e. \"healing,\" \"strength,\" etc."
--- L.HEAD_STRINGS = {"helm", "head"}
--- L.SHOULDER_STRINGS = {"shoulder", "shoulders", "pauldron", "pauldrons"}
 L["NO_MATCHES_FOUND"] = "Sorry, none of my recipes match that search"
 L["MATCHES_FOUND"] = "I can craft the following items:"
 L["MORE_ITEMS"] = "...and more.  Narrow your search for more recipes."
@@ -27,6 +24,5 @@ L["Textbox_Keywords_Desc"] = "Comma-separated list of keywords to trigger a Shop
 L["Addon_Loaded"] = "AddOn loaded..."
 L["Player_Loaded"] = "HERP"
 L["Max Recipes"] = "Max Recipes"
-
 
 addonData.L = L

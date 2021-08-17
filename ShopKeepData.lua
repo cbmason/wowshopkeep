@@ -6,15 +6,11 @@ local addonData = ...
 
 local _G = getfenv(0)
 
--- local shopData = {}
 local shopData = _G.SHOP_DBPC.database
-
 
 function ShopKeepGetCrafts()
     local name, type
     print("getting crafts")
-    -- numSkills = GetNumTradeSkills()
-    -- for i=1, GetNumTradeSkills() do
     for i=1, GetNumCrafts() do
         name, type, _, _, _, _ = GetCraftInfo(i);
         if (name and type ~= "header") then
@@ -30,8 +26,6 @@ end
 function ShopKeepGetTradeSkills()
     local name, type
     print("getting tradeskills")
-    -- numSkills = GetNumTradeSkills()
-    -- for i=1, GetNumTradeSkills() do
     for i=1, GetNumTradeSkills() do
         name, type, _, _, _, _ = GetTradeSkillInfo(i);
         if (name and type ~= "header") then
@@ -44,36 +38,6 @@ function ShopKeepGetTradeSkills()
     end
 end
 
---function BuildShopTable()
-    -- Get character's profession data
-    -- local name, type
-    -- print("building shop table")
-    -- numSkills = GetNumTradeSkills()
-    -- for i=1, GetNumTradeSkills() do
-    -- for i=1, GetNumCrafts() do
-    --     name, type, _, _, _, _ = GetCraftInfo(i);
-    --     if (name and type ~= "header") then
-    --         if shopData[name] == nil then
-    --             itemRecipe = GetCraftItemLink(i);
-    --             print("added ", itemRecipe)
-    --             shopData[name] = itemRecipe
-    --         end
-    --     end
-    -- end
-    -- for i=1, GetNumTradeSkills() do
-    --     name, type, _, _, _, _ = GetTradeSkillInfo(i);
-    --     if (name and type ~= "header") then
-    --         if shopData[name] == nil then
-    --             itemRecipe = GetTradeSkillRecipeLink(i);
-    --             print("Added ", itemRecipe)
-    --             shopData[name] = itemRecipe
-    --         end
-    --     end
-    -- end
-
---end
-
--- function GetMatchingItems(...)
 function GetMatchingItems(argtable)
     local retval = {}
     local entry_matches
@@ -82,7 +46,6 @@ function GetMatchingItems(argtable)
         -- Check each argument, if any do not match, don't add it.
         for j,v in ipairs(argtable) do
             local realString = entry:match("%b[]")
-            -- if string.find(entry:lower(), v:lower()) then
             if string.find(realString:lower(), v:lower()) then
                 entry_matches = true
             else
@@ -102,8 +65,6 @@ function PrintAllShopData()
     end
 end
 
-
-
 -- RegisterEvents
 local ShopKeepData_Eventframe = CreateFrame("FRAME")
 ShopKeepData_Eventframe:RegisterEvent("ADDON_LOADED")
@@ -114,6 +75,8 @@ local function ShopKeepData_OnEvent(self, event, arg1, arg2, ...)
             _G.SHOP_DBPC.database = {}
         end
         shopData = _G.SHOP_DBPC.database
+        ShopKeepGetTradeSkills()
+        ShopKeepGetCrafts()
         ShopKeepData_Eventframe:UnregisterEvent("ADDON_LOADED")
     end
 end

@@ -11,20 +11,18 @@ local color1 = "|cff3399ff"
 local color2 = "|cff1eff00"
 
 _G.SHOP_DB = {
-    --debugmode = false,
     Color1 = "|cff3399ff",
     Color2 = "|cff1eff00",
     Version = GetAddOnMetadata(addonName, "X-Version"),
     keywords = "!shop",
 }
 
--- todo: can we remove this?
 _G.SHOP_DBPC = {
     enabled = true,
-    onSay = false,
-    onGchat = false,
-    onParty = false,
-    onRaid = false,
+    onSay = true,
+    onGchat = true,
+    onParty = true,
+    onRaid = true,
     debugmode = false,
     max_items = 5,
 }
@@ -33,21 +31,23 @@ local isRetail = (_G.WOW_PROJECT_ID == _G.WOW_PROJECT_MAINLINE)
 local isClassic = (_G.WOW_PROJECT_ID == _G.WOW_PROJECT_CLASSIC)
 local isTBC = (_G.WOW_PROJECT_ID == _G.WOW_PROJECT_BURNING_CRUSADE_CLASSIC)
 
+local function myprint(msg)
+    if _G.SHOP_DBPC.debugmode then
+        print(_G.SHOP_DB.Color1..addonName..": ".._G.SHOP_DB.Color1..msg)
+    end
+end
 
 local function OnLoad()
-    -- if ShopKeep.ABORTLOAD then
-    --     -- Don't try to run if there were errors
-    --     return
-    -- end
     -- Check config options
     if _G.SHOP_DBPC.enabled == nil then _G.SHOP_DBPC.enabled = true end
     if _G.SHOP_DBPC.onSay == nil then _G.SHOP_DBPC.onSay = false end
-    if _G.SHOP_DBPC.onGchat == nil then _G.SHOP_DBPC.onGchat = false end
-    if _G.SHOP_DBPC.onParty == nil then _G.SHOP_DBPC.onParty = false end
-    if _G.SHOP_DBPC.onRaid == nil then _G.SHOP_DBPC.onRaid = false end
+    if _G.SHOP_DBPC.onGchat == nil then _G.SHOP_DBPC.onGchat = true end
+    if _G.SHOP_DBPC.onParty == nil then _G.SHOP_DBPC.onParty = true end
+    if _G.SHOP_DBPC.onRaid == nil then _G.SHOP_DBPC.onRaid = true end
     if _G.SHOP_DBPC.debugmode == nil then _G.SHOP_DBPC.debugmode = false end
     if _G.SHOP_DBPC.max_items == nil then _G.SHOP_DBPC.max_items = 5 end
 
+    -- Turn on responses based on initial settings
     if _G.SHOP_DBPC.enabled == true then
         ChatFrame_AddMessageEventFilter("CHAT_MSG_WHISPER", onWhisper)
         if _G.SHOP_DBPC.onSay then
@@ -63,23 +63,16 @@ local function OnLoad()
             ChatFrame_AddMessageEventFilter("CHAT_MSG_RAID", onWhisper)
         end
     end
-
-    -- Make profession tabl*
-    --BuildShopTable()
-    -- addonData.methods.getTradeSkills()
-    -- addonData.methods.getCrafts()
 end
-
 
 local function send_response(msg, sender, debug)
     if debug then
         -- if debug mode, redirect to debug
-        print(msg)
+        myprint(msg)
     else
         --otherwise, whisper the sender
         SendChatMessage(msg, "WHISPER", nil, sender)
     end
-
 end
 
 local function doResponse(msg, sender, debug)
@@ -88,29 +81,19 @@ local function doResponse(msg, sender, debug)
     -- filter for keywords
     tokens = mysplit(msg)
     -- if keywords found, handle
-    -- TODO: need to see if the ipairs parse right
     keywords = mysplit(_G.SHOP_DB["keywords"])
     for index, word in ipairs(keywords) do
-        --print(d)
         modded_word = string.gsub(word, "%s+", "")
         keywords[index] = modded_word
     end
-    --keywords = string.gsub(keywords, "%s+", "")
-    --print("keywords2")
-    --print(string.format("keywords: %s", keywords))
-    --print("keywords", keywords)
     for i, v in ipairs(keywords) do
-        --print("token: ", tokens[0])
         if tokens[1] == v then
             request_found = true
             break
         end
     end
-
-    -- if tokens[0] == _G.SHOP_DB["keywords"] then
     if request_found then
         -- get list of matching recipes
-        -- tokens:remove(1)
         table.remove(tokens, 1)
         matches = GetMatchingItems(tokens)
         if next(matches) == nil then
@@ -134,76 +117,13 @@ local function doResponse(msg, sender, debug)
     end
 end
 
-
 -- https://wow.gamepedia.com/CHAT_MSG_WHISPER
 local function onWhisper(self, event, msg, sender, _, _, _, _, _, _, _, _, lineID, guid, bnetIDAccount, isMobile)
     doResponse(msg, sender, false)
-    -- local not_finished = false
-    -- local request_found = false
-    -- -- filter for keywords
-    -- tokens = mysplit(msg)
-    -- -- if keywords found, handle
-    -- -- TODO: need to see if the ipairs parse right
-    -- keywords = mysplit(_G.SHOP_DB["keywords"])
-    -- keywords = string.gsub(keywords, "%s+", "")
-    -- for i, v in ipairs(keywords) do
-    --     if tokens[0] == v then
-    --         request_found = true
-    --         break
-    --     end
-    -- end
-
-    -- -- if tokens[0] == _G.SHOP_DB["keywords"] then
-    -- if request_found then
-    --     -- get list of matching recipes
-    --     tokens.remove(0)
-    --     matches = GetMatchingItems(tokens)
-    --     if next(matches) == nil then
-    --         --no matches, print error string
-    --         send_response(L["NO_MATCHES_FOUND"], sender)
-    --     else
-    --         --send the matches
-    --         send_response(L["MATCHES_FOUND"], sender)
-    --         for i, v in ipairs(matches) do
-    --             if i >= _G.SHOP_DB["max_items"] then
-    --                 not_finished = true
-    --                 break
-    --             else
-    --                 send_response(v, sender)
-    --             end
-    --         end
-    --         if not_finished then
-    --             send_response(L["MORE_ITEMS"], sender)
-    --         end
-    --     end
-    -- end
 end
 
 addonData.methods.doResponse = doResponse
 addonData.methods.onWhisper = onWhisper
-
-local function ShopKeep_Enable()
-    ChatFrame_AddMessageEventFilter("CHAT_MSG_WHISPER", onWhisper)
-end
-
-
-local function ShopKeep_Disable()
-    ChatFrame_RemoveMessageEventFilter("CHAT_MSG_WHISPER", onWhisper)
-end
-
-
-
--- local function onResponse()
---     if _G.SHOP_DB.debugmode then
---         PRINT TO DEBUG BOX
---     else
---     end
--- end
-
-
-local function myprint(msg)
-    print(_G.SHOP_DB.Color1..addonName..": ".._G.SHOP_DB.Color1..msg)
-end
 
 -- ripped from https://stackoverflow.com/questions/1426954/split-string-in-lua
 function mysplit (inputstr, sep)
@@ -227,7 +147,6 @@ ShopKeep_Eventframe:RegisterEvent("CRAFT_UPDATE")
 local function ShopKeep_OnEvent(self, event, arg1, arg2, ...)
     if event == "PLAYER_LOGIN" and arg1 == addonName then
         myprint(L["Addon_Loaded"])
-        -- ShopKeepConfig_Loaded = true
         OnLoad()
         ShopKeep_Eventframe:UnregisterEvent("PLAYER_LOGIN")
     end
@@ -237,22 +156,12 @@ local function ShopKeep_OnEvent(self, event, arg1, arg2, ...)
         _G.SHOP_DB.Color2 = color2
         _G.SHOP_DB["Version"] = GetAddOnMetadata(addonName, "X-Version")
 
-        -- Initialize if new variable added
-
-        -- if _G.SHOP_DBPC["AllInvite"] == nil then
-        --     _G.SHOP_DBPC.AllInvite = false
-        -- end
         ShopKeep_Eventframe:UnregisterEvent("PLAYER_LOGIN")
     end
-     --if event == "TRADE_SKILL_UPDATE" or event == "CRAFT_UPDATE" then
-    --if event == "TRADE_SKILL_SHOW" then
     if event == "CRAFT_UPDATE" then
-        --BuildShopTable()
-        --addonData.methods.getCrafts()
         ShopKeepGetCrafts()
     end
     if event == "TRADE_SKILL_UPDATE" then
-        --addonData.methods.getTradeSkills()
         ShopKeepGetTradeSkills()
     end
 end
