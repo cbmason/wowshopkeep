@@ -1,6 +1,8 @@
+-- ShopKeepData.lua
+
+-- Data and methods to store and retrieve profession data for use by the addon
+
 -- Copyright © 2021 Zensmash  <archerrez4@gmail.com>
--- All Rights Reserved.
--- This code is not to be modified or distributed without written permission by the author.
 
 local addonData = ...
 

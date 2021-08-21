@@ -1,8 +1,12 @@
--- Copyright © 2021 Zensmash  <archerrez4@gmail.com>
--- All Rights Reserved.
--- This code is not to be modified or distributed without written permission by the author.
+-- ShopKeepConfig.lua
 
--- Options dialog
+-- Implements the interface options screen
+
+-- Copyright © 2021 Zensmash  <archerrez4@gmail.com>
+
+-- Note, the commented out blocks of code are for debug mode.  Uncommenting this code will open up
+-- extra options on the config screen that enable debug mode, which allows test queries and such
+
 
 local _G = getfenv(0)
 local addonName, addonData = ...
@@ -103,8 +107,8 @@ Options:SetScript("OnShow", function(self)
         shopkeep_onPartyCheckbox.label:SetTextColor(1, 1, 1)
         shopkeep_onRaidCheckbox:Enable()
         shopkeep_onRaidCheckbox.label:SetTextColor(1, 1, 1)
-        shopkeep_DebugmodeCheckbox:Enable()
-        shopkeep_DebugmodeCheckbox.label:SetTextColor(1, 1, 1)
+        -- shopkeep_DebugmodeCheckbox:Enable()
+        -- shopkeep_DebugmodeCheckbox.label:SetTextColor(1, 1, 1)
     end
 
     local function disableUI()
@@ -116,8 +120,8 @@ Options:SetScript("OnShow", function(self)
         shopkeep_onPartyCheckbox.label:SetTextColor(0.5, 0.5, 0.5)
         shopkeep_onRaidCheckbox:Disable()
         shopkeep_onRaidCheckbox.label:SetTextColor(0.5, 0.5, 0.5)
-        shopkeep_DebugmodeCheckbox:Disable()
-        shopkeep_DebugmodeCheckbox.label:SetTextColor(0.5, 0.5, 0.5)
+        -- shopkeep_DebugmodeCheckbox:Disable()
+        -- shopkeep_DebugmodeCheckbox.label:SetTextColor(0.5, 0.5, 0.5)
     end
 
     ---------------------------------------------------------------------------
@@ -233,36 +237,36 @@ Options:SetScript("OnShow", function(self)
         end
     )
 
-    -- Debug Mode
-    shopkeep_DebugmodeCheckbox = makeCheckbox(
-        L["Checkbox_Debugmode"],
-        L["Checkbox_Debugmode_Desc"],
-        function(self, value)
-            _G.SHOP_DBPC["debugmode"] = value
-        end
-    )
-
+    -- max items box
     maxItemsLabel = makeLabel(L["Max Recipes"])
     maxItemsDropdown = makeDropDown("maxItemsDropdown", 50)
 
-    debugBox = makeEditBox("debugBox", 50, 400)
-    debugButton = makeButton("debugButton", 25, 100)
-    debugButton:SetText("Test!")
-    printAllButton = makeButton("printAllButton", 25, 100)
-    printAllButton:SetText("Dump Data!")
+    -- Debug Mode
+    -- shopkeep_DebugmodeCheckbox = makeCheckbox(
+    --     L["Checkbox_Debugmode"],
+    --     L["Checkbox_Debugmode_Desc"],
+    --     function(self, value)
+    --         _G.SHOP_DBPC["debugmode"] = value
+    --     end
+    -- )
+    -- debugBox = makeEditBox("debugBox", 50, 400)
+    -- debugButton = makeButton("debugButton", 25, 100)
+    -- debugButton:SetText("Test!")
+    -- printAllButton = makeButton("printAllButton", 25, 100)
+    -- printAllButton:SetText("Dump Data!")
 
-    local function debugButton_OnClick()
-        if _G.SHOP_DBPC["debugmode"] and _G.SHOP_DBPC["enabled"] then
-            addonData.methods.doResponse(debugBox:GetText(), nil, true)
-        end
-    end
+    -- local function debugButton_OnClick()
+    --     if _G.SHOP_DBPC["debugmode"] and _G.SHOP_DBPC["enabled"] then
+    --         addonData.methods.doResponse(debugBox:GetText(), nil, true)
+    --     end
+    -- end
 
-    local function printAllButton_OnClick()
-        PrintAllShopData()
-    end
+    -- local function printAllButton_OnClick()
+    --     PrintAllShopData()
+    -- end
 
-    debugButton:SetScript("OnClick", debugButton_OnClick )
-    printAllButton:SetScript("OnClick", printAllButton_OnClick )
+    -- debugButton:SetScript("OnClick", debugButton_OnClick )
+    -- printAllButton:SetScript("OnClick", printAllButton_OnClick )
 
     ---------------------------------------------------------------------------
     -- LAYOUT
@@ -296,16 +300,20 @@ Options:SetScript("OnShow", function(self)
     maxItemsDropdown:SetPoint("TOPLEFT", TitleOptions, "BOTTOMLEFT", 75, offset);
 
     -- Debug buttons / box / checkmark
-    offset = offset -150
-    if _G.SHOP_DBPC["enabled"] then shopkeep_DebugmodeCheckbox:Enable(); end
-    shopkeep_DebugmodeCheckbox:SetChecked(_G.SHOP_DBPC["debugmode"]);
-    shopkeep_DebugmodeCheckbox:SetPoint("TOPLEFT", TitleOptions, "BOTTOMLEFT", 0, offset);
+    -- offset = offset -150
+    -- if _G.SHOP_DBPC["enabled"] then shopkeep_DebugmodeCheckbox:Enable(); end
+    -- shopkeep_DebugmodeCheckbox:SetChecked(_G.SHOP_DBPC["debugmode"]);
+    -- shopkeep_DebugmodeCheckbox:SetPoint("TOPLEFT", TitleOptions, "BOTTOMLEFT", 0, offset);
 
-    offset = offset -45
-    debugBox:SetPoint("TOPLEFT", TitleOptions, "BOTTOMLEFT", 0, offset);
-    debugButton:SetPoint("TOPLEFT", TitleOptions, "BOTTOMLEFT", 410, offset);
-    offset = offset -25
-    printAllButton:SetPoint("TOPLEFT", TitleOptions, "BOTTOMLEFT", 410, offset);
+    -- offset = offset -45
+    -- debugBox:SetPoint("TOPLEFT", TitleOptions, "BOTTOMLEFT", 0, offset);
+    -- debugButton:SetPoint("TOPLEFT", TitleOptions, "BOTTOMLEFT", 410, offset);
+    -- offset = offset -25
+    -- printAllButton:SetPoint("TOPLEFT", TitleOptions, "BOTTOMLEFT", 410, offset);
+
+    ---------------------------------------------------------------------------
+    -- Initialization behavior
+    ---------------------------------------------------------------------------
 
     if _G.SHOP_DBPC["enabled"] then
         enableUI()

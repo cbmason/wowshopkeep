@@ -1,6 +1,8 @@
+-- ShopKeep.lua
+
+-- Main app functionality
+
 -- Copyright © 2021 Zensmash  <archerrez4@gmail.com>
--- All Rights Reserved.
--- This code is not to be modified or distributed without written permission by the author.
 
 local _G = getfenv(0)
 local addonName, addonData = ...
