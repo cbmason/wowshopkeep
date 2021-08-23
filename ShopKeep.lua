@@ -7,6 +7,7 @@
 local _G = getfenv(0)
 local addonName, addonData = ...
 local L = addonData.L
+local max_message_chars = 255
 addonData.methods = {}
 
 _G.SHOP_DB = {
@@ -28,35 +29,6 @@ _G.SHOP_DBPC = {
 
 local function myprint(msg)
     print(_G.SHOP_DB.Color1..addonName..": ".._G.SHOP_DB.Color1..msg)
-end
-
-local function OnLoad()
-    -- Check config options
-    if _G.SHOP_DBPC.enabled == nil then _G.SHOP_DBPC.enabled = true end
-    if _G.SHOP_DBPC.onSay == nil then _G.SHOP_DBPC.onSay = false end
-    if _G.SHOP_DBPC.onGchat == nil then _G.SHOP_DBPC.onGchat = true end
-    if _G.SHOP_DBPC.onParty == nil then _G.SHOP_DBPC.onParty = true end
-    if _G.SHOP_DBPC.onRaid == nil then _G.SHOP_DBPC.onRaid = true end
-    if _G.SHOP_DBPC.debugmode == nil then _G.SHOP_DBPC.debugmode = false end
-    if _G.SHOP_DBPC.max_items == nil then _G.SHOP_DBPC.max_items = 5 end
-    if _G.SHOP_DBPC.show_firsttime_help == nil then _G.SHOP_DBPC.show_firsttime_help = true end
-
-    -- Turn on responses based on initial settings
-    if _G.SHOP_DBPC.enabled == true then
-        ChatFrame_AddMessageEventFilter("CHAT_MSG_WHISPER", onWhisper)
-        if _G.SHOP_DBPC.onSay then
-            ChatFrame_AddMessageEventFilter("CHAT_MSG_SAY", onWhisper)
-        end
-        if _G.SHOP_DBPC.onGchat then
-            ChatFrame_AddMessageEventFilter("CHAT_MSG_GUILD", onWhisper)
-        end
-        if _G.SHOP_DBPC.onParty then
-            ChatFrame_AddMessageEventFilter("CHAT_MSG_PARTY", onWhisper)
-        end
-        if _G.SHOP_DBPC.Checkbox_onRaid then
-            ChatFrame_AddMessageEventFilter("CHAT_MSG_RAID", onWhisper)
-        end
-    end
 end
 
 local function send_response(msg, sender, debug)
@@ -96,14 +68,22 @@ local function doResponse(msg, sender, debug)
         else
             --send the matches
             send_response(L["MATCHES_FOUND"], sender, debug)
+            matchstring = ""
             for i, v in ipairs(matches) do
                 if i > _G.SHOP_DBPC["max_items"] then
                     not_finished = true
                     break
                 else
-                    send_response(v, sender, debug)
+                    -- Send Chat API limits the number of chars in a message, so flush the send buffer
+                    -- if we exceed that
+                    if( ( string.len(matchstring) + string.len( v ) + 1 ) > max_message_chars ) then
+                        send_response(matchstring, sender, debug)
+                        matchstring = ""
+                    end
+                    matchstring = matchstring .. v .. " "
                 end
             end
+            send_response(matchstring, sender, debug)
             if not_finished then
                 send_response(L["MORE_ITEMS"], sender, debug)
             end
@@ -119,6 +99,36 @@ end
 addonData.methods.doResponse = doResponse
 addonData.methods.onWhisper = onWhisper
 
+local function OnLoad()
+    -- Check config options
+    if _G.SHOP_DBPC.enabled == nil then _G.SHOP_DBPC.enabled = true end
+    if _G.SHOP_DBPC.onSay == nil then _G.SHOP_DBPC.onSay = true end
+    if _G.SHOP_DBPC.onGchat == nil then _G.SHOP_DBPC.onGchat = true end
+    if _G.SHOP_DBPC.onParty == nil then _G.SHOP_DBPC.onParty = true end
+    if _G.SHOP_DBPC.onRaid == nil then _G.SHOP_DBPC.onRaid = true end
+    if _G.SHOP_DBPC.debugmode == nil then _G.SHOP_DBPC.debugmode = false end
+    if _G.SHOP_DBPC.max_items == nil then _G.SHOP_DBPC.max_items = 5 end
+    if _G.SHOP_DBPC.show_firsttime_help == nil then _G.SHOP_DBPC.show_firsttime_help = true end
+
+    -- Turn on responses based on initial settings
+    if _G.SHOP_DBPC.enabled == true then
+        ChatFrame_AddMessageEventFilter("CHAT_MSG_WHISPER", onWhisper)
+        if _G.SHOP_DBPC.onSay then
+            ChatFrame_AddMessageEventFilter("CHAT_MSG_SAY", onWhisper)
+        end
+        if _G.SHOP_DBPC.onGchat then
+            ChatFrame_AddMessageEventFilter("CHAT_MSG_GUILD", onWhisper)
+        end
+        if _G.SHOP_DBPC.onParty then
+            ChatFrame_AddMessageEventFilter("CHAT_MSG_PARTY", onWhisper)
+        end
+        if _G.SHOP_DBPC.Checkbox_onRaid then
+            ChatFrame_AddMessageEventFilter("CHAT_MSG_RAID", onWhisper)
+        end
+    end
+end
+
+
 -- ripped from https://stackoverflow.com/questions/1426954/split-string-in-lua
 function mysplit (inputstr, sep)
     if sep == nil then
@@ -131,24 +141,28 @@ function mysplit (inputstr, sep)
     return t
 end
 
+-- Event order: --
+-- ADDON_LOADED
+-- SPELLS_CHANGED
+-- PLAYER_LOGIN
+-- PLAYER_ENTERING_WORLD
+-- PLAYER_ALIVE
+
 -- RegisterEvents
 local ShopKeep_Eventframe = CreateFrame("FRAME")
-ShopKeep_Eventframe:RegisterEvent("PLAYER_LOGIN")
 ShopKeep_Eventframe:RegisterEvent("ADDON_LOADED")
+ShopKeep_Eventframe:RegisterEvent("PLAYER_LOGIN")
 ShopKeep_Eventframe:RegisterEvent("TRADE_SKILL_UPDATE")
 ShopKeep_Eventframe:RegisterEvent("CRAFT_UPDATE")
 
 local function ShopKeep_OnEvent(self, event, arg1, ...)
-    if event == "PLAYER_LOGIN" and arg1 == addonName then
-        OnLoad()
-        ShopKeep_Eventframe:UnregisterEvent("PLAYER_LOGIN")
-    end
-    if event == "ADDON_LOADED" then
+    if event == "PLAYER_LOGIN" then
         if _G.SHOP_DBPC.show_firsttime_help then
             myprint(L["show_firsttime_help"])
             _G.SHOP_DBPC.show_firsttime_help = false
         end
-        ShopKeep_Eventframe:UnregisterEvent("ADDON_LOADED")
+        OnLoad()
+        ShopKeep_Eventframe:UnregisterEvent("PLAYER_LOGIN")
     end
     if event == "CRAFT_UPDATE" then
         ShopKeepGetCrafts()

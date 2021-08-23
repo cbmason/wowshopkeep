@@ -137,7 +137,7 @@ Options:SetScript("OnShow", function(self)
     local VersionOptions = self:CreateFontString("$parentTitleOptions", "ARTWORK", "GameFontNormal");
     VersionOptions:SetPoint("TOPRIGHT", -16, -17)
     VersionOptions:SetJustifyH("RIGHT")
-    VersionOptions:SetText(_G.SHOP_DB["Color2"].._G.SHOP_DB["Version"])
+    VersionOptions:SetText(_G.SHOP_DB["Color1"].._G.SHOP_DB["Version"])
 
     -- Enabled
     shopkeep_EnabledCheckbox = makeCheckbox(

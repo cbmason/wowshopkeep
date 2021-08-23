@@ -17,7 +17,7 @@ function ShopKeepGetCrafts()
         if (name and type ~= "header") then
             if shopData[name] == nil then
                 itemRecipe = GetCraftItemLink(i);
-                -- print("added ", itemRecipe) debug only
+                --print("added ", itemRecipe) -- debug only
                 shopData[name] = itemRecipe
             end
         end
@@ -31,7 +31,7 @@ function ShopKeepGetTradeSkills()
         if (name and type ~= "header") then
             if shopData[name] == nil then
                 itemRecipe = GetTradeSkillRecipeLink(i);
-                -- print("Added ", itemRecipe) debug only
+                --print("Added ", itemRecipe) -- debug only
                 shopData[name] = itemRecipe
             end
         end
