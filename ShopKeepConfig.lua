@@ -107,6 +107,8 @@ Options:SetScript("OnShow", function(self)
         shopkeep_onPartyCheckbox.label:SetTextColor(1, 1, 1)
         shopkeep_onRaidCheckbox:Enable()
         shopkeep_onRaidCheckbox.label:SetTextColor(1, 1, 1)
+        shopkeep_allCharsCheckbox:Enable()
+        shopkeep_allCharsCheckbox.label:SetTextColor(1, 1, 1)
         -- shopkeep_DebugmodeCheckbox:Enable()
         -- shopkeep_DebugmodeCheckbox.label:SetTextColor(1, 1, 1)
     end
@@ -120,6 +122,8 @@ Options:SetScript("OnShow", function(self)
         shopkeep_onPartyCheckbox.label:SetTextColor(0.5, 0.5, 0.5)
         shopkeep_onRaidCheckbox:Disable()
         shopkeep_onRaidCheckbox.label:SetTextColor(0.5, 0.5, 0.5)
+        shopkeep_allCharsCheckbox:Disable()
+        shopkeep_allCharsCheckbox.label:SetTextColor(0.5, 0.5, 0.5)
         -- shopkeep_DebugmodeCheckbox:Disable()
         -- shopkeep_DebugmodeCheckbox.label:SetTextColor(0.5, 0.5, 0.5)
     end
@@ -150,32 +154,32 @@ Options:SetScript("OnShow", function(self)
                 ChatFrame_AddMessageEventFilter("CHAT_MSG_WHISPER", addonData.methods.onWhisper)
                 enableUI()
                 if _G.SHOP_DBPC["onSay"] then
-                    ChatFrame_AddMessageEventFilter("CHAT_MSG_SAY", addonData.methods.onWhisper)
+                    ChatFrame_AddMessageEventFilter("CHAT_MSG_SAY", addonData.methods.onBroadcast)
                 end
                 if _G.SHOP_DBPC["onGchat"] then
-                    ChatFrame_AddMessageEventFilter("CHAT_MSG_GUILD", addonData.methods.onWhisper)
+                    ChatFrame_AddMessageEventFilter("CHAT_MSG_GUILD", addonData.methods.onBroadcast)
                 end
                 if _G.SHOP_DBPC["onParty"] then
-                    ChatFrame_AddMessageEventFilter("CHAT_MSG_PARTY", addonData.methods.onWhisper)
+                    ChatFrame_AddMessageEventFilter("CHAT_MSG_PARTY", addonData.methods.onBroadcast)
                 end
                 if _G.SHOP_DBPC["Checkbox_onRaid"] then
-                    ChatFrame_AddMessageEventFilter("CHAT_MSG_RAID", addonData.methods.onWhisper)
+                    ChatFrame_AddMessageEventFilter("CHAT_MSG_RAID", addonData.methods.onBroadcast)
                 end
             else
                 -- ShopKeep_Disable()
                 ChatFrame_RemoveMessageEventFilter("CHAT_MSG_WHISPER", addonData.methods.onWhisper)
                 disableUI()
                 if _G.SHOP_DBPC["onSay"] then
-                    ChatFrame_RemoveMessageEventFilter("CHAT_MSG_SAY", addonData.methods.onWhisper)
+                    ChatFrame_RemoveMessageEventFilter("CHAT_MSG_SAY", addonData.methods.onBroadcast)
                 end
                 if _G.SHOP_DBPC["onGchat"] then
-                    ChatFrame_RemoveMessageEventFilter("CHAT_MSG_GUILD", addonData.methods.onWhisper)
+                    ChatFrame_RemoveMessageEventFilter("CHAT_MSG_GUILD", addonData.methods.onBroadcast)
                 end
                 if _G.SHOP_DBPC["onParty"] then
-                    ChatFrame_RemoveMessageEventFilter("CHAT_MSG_PARTY", addonData.methods.onWhisper)
+                    ChatFrame_RemoveMessageEventFilter("CHAT_MSG_PARTY", addonData.methods.onBroadcast)
                 end
                 if _G.SHOP_DBPC["Checkbox_onRaid"] then
-                    ChatFrame_RemoveMessageEventFilter("CHAT_MSG_RAID", addonData.methods.onWhisper)
+                    ChatFrame_RemoveMessageEventFilter("CHAT_MSG_RAID", addonData.methods.onBroadcast)
                 end
             end
         end
@@ -188,9 +192,9 @@ Options:SetScript("OnShow", function(self)
         function(self, value)
             _G.SHOP_DBPC["onSay"] = value
             if _G.SHOP_DBPC["onSay"] and _G.SHOP_DBPC["enabled"] then
-                ChatFrame_AddMessageEventFilter("CHAT_MSG_SAY", addonData.methods.onWhisper)
+                ChatFrame_AddMessageEventFilter("CHAT_MSG_SAY", addonData.methods.onBroadcast)
             else
-                ChatFrame_RemoveMessageEventFilter("CHAT_MSG_SAY", addonData.methods.onWhisper)
+                ChatFrame_RemoveMessageEventFilter("CHAT_MSG_SAY", addonData.methods.onBroadcast)
             end
         end
     )
@@ -202,9 +206,9 @@ Options:SetScript("OnShow", function(self)
         function(self, value)
             _G.SHOP_DBPC["onGchat"] = value
             if _G.SHOP_DBPC["onGchat"] and _G.SHOP_DBPC["enabled"] then
-                ChatFrame_AddMessageEventFilter("CHAT_MSG_GUILD", addonData.methods.onWhisper)
+                ChatFrame_AddMessageEventFilter("CHAT_MSG_GUILD", addonData.methods.onBroadcast)
             else
-                ChatFrame_RemoveMessageEventFilter("CHAT_MSG_GUILD", addonData.methods.onWhisper)
+                ChatFrame_RemoveMessageEventFilter("CHAT_MSG_GUILD", addonData.methods.onBroadcast)
             end
         end
     )
@@ -216,9 +220,9 @@ Options:SetScript("OnShow", function(self)
         function(self, value)
             _G.SHOP_DBPC["onParty"] = value
             if _G.SHOP_DBPC["onParty"] and _G.SHOP_DBPC["enabled"] then
-                ChatFrame_AddMessageEventFilter("CHAT_MSG_PARTY", addonData.methods.onWhisper)
+                ChatFrame_AddMessageEventFilter("CHAT_MSG_PARTY", addonData.methods.onBroadcast)
             else
-                ChatFrame_RemoveMessageEventFilter("CHAT_MSG_PARTY", addonData.methods.onWhisper)
+                ChatFrame_RemoveMessageEventFilter("CHAT_MSG_PARTY", addonData.methods.onBroadcast)
             end
         end
     )
@@ -230,10 +234,19 @@ Options:SetScript("OnShow", function(self)
         function(self, value)
             _G.SHOP_DBPC["onRaid"] = value
             if _G.SHOP_DBPC["onRaid"] and _G.SHOP_DBPC["enabled"] then
-                ChatFrame_AddMessageEventFilter("CHAT_MSG_RAID", addonData.methods.onWhisper)
+                ChatFrame_AddMessageEventFilter("CHAT_MSG_RAID", addonData.methods.onBroadcast)
             else
-                ChatFrame_RemoveMessageEventFilter("CHAT_MSG_RAID", addonData.methods.onWhisper)
+                ChatFrame_RemoveMessageEventFilter("CHAT_MSG_RAID", addonData.methods.onBroadcast)
             end
+        end
+    )
+
+    -- All Characters
+    shopkeep_allCharsCheckbox = makeCheckbox(
+        L["Checkbox_allChars"] ,
+        L["Checkbox_allChars_Desc"] ,
+        function(self, value)
+            _G.SHOP_DBPC["all_characters"] = value
         end
     )
 
@@ -293,6 +306,11 @@ Options:SetScript("OnShow", function(self)
     offset = offset -25
     shopkeep_onRaidCheckbox:SetChecked(_G.SHOP_DBPC["onRaid"]);
     shopkeep_onRaidCheckbox:SetPoint("TOPLEFT", TitleOptions, "BOTTOMLEFT", enables_x_offset, offset);
+
+    -- use all chars
+    offset = offset -45
+    shopkeep_allCharsCheckbox:SetChecked(_G.SHOP_DBPC["all_characters"]);
+    shopkeep_allCharsCheckbox:SetPoint("TOPLEFT", TitleOptions, "BOTTOMLEFT", enables_x_offset, offset);
 
     -- max items
     offset = offset -45

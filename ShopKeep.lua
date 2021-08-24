@@ -24,6 +24,7 @@ _G.SHOP_DBPC = {
     onRaid = true,
     debugmode = false,
     show_firsttime_help = true,
+    all_characters = false,
     max_items = 5,
 }
 
@@ -41,7 +42,8 @@ local function send_response(msg, sender, debug)
     end
 end
 
-local function doResponse(msg, sender, debug)
+-- Whisper: is this a whisper or a broadcast response (i.e., party / say / guild)
+local function doResponse(msg, sender, whisper, debug)
     local not_finished = false
     local request_found = false
     -- filter for keywords
@@ -63,8 +65,11 @@ local function doResponse(msg, sender, debug)
         table.remove(tokens, 1)
         matches = GetMatchingItems(tokens)
         if next(matches) == nil then
-            --no matches, print error string
-            send_response(L["NO_MATCHES_FOUND"], sender, debug)
+            -- no matches, print error string if this is a whisper, otherwise ignore so the requester
+            -- doesn't get 9001 messages if others are using this addon
+            if whisper then
+                send_response(L["NO_MATCHES_FOUND"], sender, debug)
+            end
         else
             --send the matches
             send_response(L["MATCHES_FOUND"], sender, debug)
@@ -93,11 +98,16 @@ end
 
 -- https://wow.gamepedia.com/CHAT_MSG_WHISPER
 local function onWhisper(self, event, msg, sender, _, _, _, _, _, _, _, _, lineID, guid, bnetIDAccount, isMobile)
-    doResponse(msg, sender, false)
+    doResponse(msg, sender, true, false)
+end
+
+local function onBroadcast(self, event, msg, sender, _, _, _, _, _, _, _, _, lineID, guid, bnetIDAccount, isMobile)
+    doResponse(msg, sender, false, false)
 end
 
 addonData.methods.doResponse = doResponse
 addonData.methods.onWhisper = onWhisper
+addonData.methods.onBroadcast = onBroadcast
 
 local function OnLoad()
     -- Check config options
@@ -106,6 +116,7 @@ local function OnLoad()
     if _G.SHOP_DBPC.onGchat == nil then _G.SHOP_DBPC.onGchat = true end
     if _G.SHOP_DBPC.onParty == nil then _G.SHOP_DBPC.onParty = true end
     if _G.SHOP_DBPC.onRaid == nil then _G.SHOP_DBPC.onRaid = true end
+    if _G.SHOP_DBPC.all_characters == nil then _G.SHOP_DBPC.all_characters = false end
     if _G.SHOP_DBPC.debugmode == nil then _G.SHOP_DBPC.debugmode = false end
     if _G.SHOP_DBPC.max_items == nil then _G.SHOP_DBPC.max_items = 5 end
     if _G.SHOP_DBPC.show_firsttime_help == nil then _G.SHOP_DBPC.show_firsttime_help = true end
@@ -114,16 +125,16 @@ local function OnLoad()
     if _G.SHOP_DBPC.enabled == true then
         ChatFrame_AddMessageEventFilter("CHAT_MSG_WHISPER", onWhisper)
         if _G.SHOP_DBPC.onSay then
-            ChatFrame_AddMessageEventFilter("CHAT_MSG_SAY", onWhisper)
+            ChatFrame_AddMessageEventFilter("CHAT_MSG_SAY", onBroadcast)
         end
         if _G.SHOP_DBPC.onGchat then
-            ChatFrame_AddMessageEventFilter("CHAT_MSG_GUILD", onWhisper)
+            ChatFrame_AddMessageEventFilter("CHAT_MSG_GUILD", onBroadcast)
         end
         if _G.SHOP_DBPC.onParty then
-            ChatFrame_AddMessageEventFilter("CHAT_MSG_PARTY", onWhisper)
+            ChatFrame_AddMessageEventFilter("CHAT_MSG_PARTY", onBroadcast)
         end
         if _G.SHOP_DBPC.Checkbox_onRaid then
-            ChatFrame_AddMessageEventFilter("CHAT_MSG_RAID", onWhisper)
+            ChatFrame_AddMessageEventFilter("CHAT_MSG_RAID", onBroadcast)
         end
     end
 end

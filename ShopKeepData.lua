@@ -9,6 +9,7 @@ local addonData = ...
 local _G = getfenv(0)
 
 local shopData = _G.SHOP_DBPC.database
+local shopDataAll = _G.SHOP_DB.database
 
 function ShopKeepGetCrafts()
     local name, type
@@ -19,6 +20,11 @@ function ShopKeepGetCrafts()
                 itemRecipe = GetCraftItemLink(i);
                 --print("added ", itemRecipe) -- debug only
                 shopData[name] = itemRecipe
+            end
+            if shopDataAll[name] == nil then
+                itemRecipe = GetCraftItemLink(i);
+                --print("Added ", itemRecipe, " to all") -- debug only
+                shopDataAll[name] = itemRecipe
             end
         end
     end
@@ -34,6 +40,11 @@ function ShopKeepGetTradeSkills()
                 --print("Added ", itemRecipe) -- debug only
                 shopData[name] = itemRecipe
             end
+            if shopDataAll[name] == nil then
+                itemRecipe = GetTradeSkillRecipeLink(i);
+                --print("Added ", itemRecipe, " to all") -- debug only
+                shopDataAll[name] = itemRecipe
+            end
         end
     end
 end
@@ -41,7 +52,15 @@ end
 function GetMatchingItems(argtable)
     local retval = {}
     local entry_matches
-    for i, entry in pairs(shopData) do
+    local data
+
+    if _G.SHOP_DBPC["all_characters"] then
+        data = shopDataAll
+    else
+        data = shopData
+    end
+
+    for i, entry in pairs(data) do
         entry_matches = false
         -- Check each argument, if any do not match, don't add it.
         for j,v in ipairs(argtable) do
@@ -74,7 +93,11 @@ local function ShopKeepData_OnEvent(self, event, arg1, arg2, ...)
         if _G.SHOP_DBPC.database == nil then
             _G.SHOP_DBPC.database = {}
         end
+        if _G.SHOP_DB.database == nil then
+            _G.SHOP_DB.database = {}
+        end
         shopData = _G.SHOP_DBPC.database
+        shopDataAll = _G.SHOP_DB.database
         ShopKeepGetTradeSkills()
         ShopKeepGetCrafts()
         ShopKeepData_Eventframe:UnregisterEvent("ADDON_LOADED")

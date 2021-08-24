@@ -16,6 +16,8 @@ L["Checkbox_onParty"] = "Enable for /party"
 L["Checkbox_onParty_Desc"] = "ShopKeep will respond to /party"
 L["Checkbox_onRaid"] = "Enable for /raid"
 L["Checkbox_onRaid_Desc"] = "ShopKeep will respond to /raid"
+L["Checkbox_allChars"] = "Use ALL characters"
+L["Checkbox_allChars_Desc"] = "ShopKeep will respond with recipes from ALL your characters (must scan on each character first)"
 
 L["Checkbox_Debugmode"] = "Debug mode (Development only)"
 L["Checkbox_Debugmode_Desc"] = "Enables the debug console, !REMOVE FOR RELEASE!"
