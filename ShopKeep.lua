@@ -24,8 +24,8 @@ _G.SHOP_DBPC = {
     onRaid = true,
     debugmode = false,
     show_firsttime_help = true,
-    all_characters = false,
-    max_items = 5,
+    all_characters = true,
+    max_items = 8,
 }
 
 local function myprint(msg)
@@ -116,9 +116,9 @@ local function OnLoad()
     if _G.SHOP_DBPC.onGchat == nil then _G.SHOP_DBPC.onGchat = true end
     if _G.SHOP_DBPC.onParty == nil then _G.SHOP_DBPC.onParty = true end
     if _G.SHOP_DBPC.onRaid == nil then _G.SHOP_DBPC.onRaid = true end
-    if _G.SHOP_DBPC.all_characters == nil then _G.SHOP_DBPC.all_characters = false end
+    if _G.SHOP_DBPC.all_characters == nil then _G.SHOP_DBPC.all_characters = true end
     if _G.SHOP_DBPC.debugmode == nil then _G.SHOP_DBPC.debugmode = false end
-    if _G.SHOP_DBPC.max_items == nil then _G.SHOP_DBPC.max_items = 5 end
+    if _G.SHOP_DBPC.max_items == nil then _G.SHOP_DBPC.max_items = 8 end
     if _G.SHOP_DBPC.show_firsttime_help == nil then _G.SHOP_DBPC.show_firsttime_help = true end
 
     -- Turn on responses based on initial settings

@@ -4,7 +4,7 @@
 ## Notes: Autoreply with wares for sale
 ## SavedVariables: SHOP_DB
 ## SavedVariablesPerCharacter: SHOP_DBPC
-## X-Version: 1.0.0
+## X-Version: 1.0.1
 Locales\enUS.lua
 ShopKeep.lua
 ShopKeepConfig.lua
