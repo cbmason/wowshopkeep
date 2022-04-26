@@ -2,7 +2,7 @@
 
 -- Implements the interface options screen
 
--- Copyright © 2021 Zensmash  <archerrez4@gmail.com>
+-- Copyright © 2021 <archerrez4@gmail.com>
 
 -- Note, the commented out blocks of code are for debug mode.  Uncommenting this code will open up
 -- extra options on the config screen that enable debug mode, which allows test queries and such

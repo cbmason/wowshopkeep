@@ -2,7 +2,7 @@
 
 -- Data and methods to store and retrieve profession data for use by the addon
 
--- Copyright © 2021 Zensmash  <archerrez4@gmail.com>
+-- Copyright © 2021 <archerrez4@gmail.com>
 
 local addonData = ...
 

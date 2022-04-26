@@ -2,7 +2,7 @@
 
 -- Main app functionality
 
--- Copyright © 2021 Zensmash  <archerrez4@gmail.com>
+-- Copyright © 2021 <archerrez4@gmail.com>
 
 local _G = getfenv(0)
 local addonName, addonData = ...

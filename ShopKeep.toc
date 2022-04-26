@@ -1,6 +1,6 @@
-## Interface: 20501
+## Interface: 20504
 ## Title: ShopKeep
-## Author: Zensmash (archerrez4@gmail.com)
+## Author: (archerrez4@gmail.com)
 ## Notes: Autoreply with wares for sale
 ## SavedVariables: SHOP_DB
 ## SavedVariablesPerCharacter: SHOP_DBPC
